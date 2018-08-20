@@ -65,9 +65,9 @@ class RepoCell: BaseTableViewCell {
          view constraints
          */
         
-        imvAvatar.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 2).isActive = true
-        imvAvatar.topAnchor.constraint(equalTo: self.topAnchor, constant: 2).isActive = true
-        imvAvatar.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 2).isActive = true
+        imvAvatar.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
+        imvAvatar.topAnchor.constraint(equalTo: self.topAnchor, constant: 8).isActive = true
+        imvAvatar.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8).isActive = true
         imvAvatar.widthAnchor.constraint(equalTo: imvAvatar.heightAnchor).isActive = true
         imvAvatar.backgroundColor = UIColor.red
         

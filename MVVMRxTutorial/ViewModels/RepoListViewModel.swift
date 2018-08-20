@@ -23,10 +23,29 @@ class RepoListViewModel {
     init(apiClient : RepoAPIClientProtocol) {
         self.apiClient = apiClient
         self.repoViewModelList = BehaviorRelay<[RepoViewModel]>(value: [])
+        
+        loadDataAction = Action(workFactory: {[weak self] (input) -> Observable<[RepoViewModel]> in
+            self?.isLoadingData.accept(true)
+            guard let theSelf = self else { return Observable.never()}
+            return theSelf.loadData()
+        })
+        
+        loadDataAction.elements.subscribe {[weak self] (repoViewModels) in
+            if let elements = repoViewModels.element {
+                self?.repoViewModelList.accept(elements)
+            } else {
+                self?.repoViewModelList.accept([])
+            }
+            self?.isLoadingData.accept(false)
+        }.disposed(by: bag)
+        
+        loadDataAction.errors.subscribe {[weak self](error) in
+            print(error)
+            self?.isLoadingData.accept(false)
+        }.disposed(by: bag)
     }
     
-    func loadData() -> Observable<[RepoViewModel]> {
-        isLoadingData.accept(true)
+    private func loadData() -> Observable<[RepoViewModel]> {
         let input = APIInput(urlString: apiClient.URL_REPO_LIST, params: nil, extHeaders: nil, requestType: .get)
         let  observable = apiClient.getRepoList(input: input).map { (repos) -> [RepoViewModel] in
             var res = [RepoViewModel]()
@@ -38,30 +57,6 @@ class RepoListViewModel {
         }
         
         return observable
-    }
-    
-    func fetchData() {
-        isLoadingData.accept(true)
-        let input = APIInput(urlString: apiClient.URL_REPO_LIST, params: nil, extHeaders: nil, requestType: .get)
-        let  observable = apiClient.getRepoList(input: input).map { (repos) -> [RepoViewModel] in
-            var res = [RepoViewModel]()
-            for repo in repos {
-                res.append(RepoViewModel(repo: repo))
-            }
-            
-            return res
-        }
-        
-        let disposable = observable.subscribe(onNext: { [weak self](repoViewModels) in
-            self?.repoViewModelList.accept(repoViewModels)
-            self?.isLoadingData.accept(false)
-        }, onError: { [weak self](error) in
-            self?.isLoadingData.accept(false)
-            print(error)
-        })
-        
-        disposable.disposed(by: self.bag)
-
     }
     
 }
