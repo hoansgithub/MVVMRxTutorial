@@ -48,10 +48,7 @@ class RepoListViewModel {
     private func loadData() -> Observable<[RepoViewModel]> {
         let input = APIInput(urlString: apiClient.URL_REPO_LIST, params: nil, extHeaders: nil, requestType: .get)
         let  observable = apiClient.getRepoList(input: input).map { (repos) -> [RepoViewModel] in
-            var res = [RepoViewModel]()
-            for repo in repos {
-                res.append(RepoViewModel(repo: repo))
-            }
+            let res = repos.map { return RepoViewModel(repo: $0) }
             
             return res
         }

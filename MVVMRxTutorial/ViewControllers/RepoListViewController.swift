@@ -44,7 +44,7 @@ class RepoListViewController: BaseViewController {
         refreshControl = UIRefreshControl()
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         tblRepo.addSubview(refreshControl)
-        tblRepo.sendSubview(toBack: refreshControl)
+        tblRepo.sendSubviewToBack(refreshControl)
         
         //constraints
         tblRepo.translatesAutoresizingMaskIntoConstraints = false
@@ -68,6 +68,12 @@ class RepoListViewController: BaseViewController {
         refreshControl.rx.bind(to: viewModel.loadDataAction, controlEvent: refreshControl.rx.controlEvent(.valueChanged)) { _ in
             return "REFRESH"
         }
+        
+        tblRepo.rx.itemSelected.subscribe(
+            onNext : { [weak self] indexPath in
+                self?.tblRepo.deselectRow(at: indexPath, animated: true)
+        }
+            ).disposed(by: disposeBag)
     }
 }
 

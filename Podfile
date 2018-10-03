@@ -14,7 +14,7 @@ target 'MVVMRxTutorial' do
       pod 'Swinject'
       pod 'SDWebImage', '~> 4.0'
       pod 'Action'
-  
+
   target 'MVVMRxTutorialTests' do
       pod 'RxBlocking', '~> 4.0'
       pod 'RxTest',     '~> 4.0'

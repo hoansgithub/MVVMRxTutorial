@@ -20,8 +20,27 @@ enum APIError : Error {
 }
 
 class APIClient {
+    
+    static let shared = APIClient()
+    
+    var backgroundCompletionHandler: (() -> Void)? {
+        get {
+            return sessionManager.backgroundCompletionHandler
+        }
+        set {
+            sessionManager.backgroundCompletionHandler = newValue
+        }
+    }
+    
+    private lazy var sessionManager : Alamofire.SessionManager = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: "com.url.background")
+        configuration.timeoutIntervalForRequest = 200 // seconds
+        configuration.timeoutIntervalForResource = 200
+        return Alamofire.SessionManager(configuration: configuration)
+    }()
+    
     private func _request(_ input : APIInput) -> Observable<Any> {
-        let manager = Alamofire.SessionManager.default
+        let manager = APIClient.shared.sessionManager
         return manager.rx.request(input.requestType
             , input.urlString
             , parameters: input.parameters
